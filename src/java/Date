@@ -1,0 +1,21 @@
+ try {
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+      sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+      Calendar calendar = GregorianCalendar.getInstance(TimeZone.getTimeZone("GMT+8")); // creates a new calendar instance
+      //if (null != rs && rs.getRow() > 0 && rs.last()) {
+      if (rs.next()) {
+        latestIndexTime = sdf.format(rs.getTimestamp("modified_time"));
+        calendar.setTime(rs.getTimestamp("modified_time"));   // assigns calendar to given date 
+        latestIndexHour = calendar.get(Calendar.HOUR_OF_DAY);
+        logger.info("latest index time : " + latestIndexTime + ", latestIndexHour : " + latestIndexHour);
+      } else if (latestIndexTime.isEmpty()){
+        Date tmpDate = new Date();
+        latestIndexTime = sdf.format(tmpDate);
+        calendar.setTime(tmpDate);   // assigns calendar to given date 
+        latestIndexHour = calendar.get(Calendar.HOUR_OF_DAY);
+        logger.info("non incr data, so init index time : " + latestIndexTime + ", index hour : " + latestIndexHour);
+      }
+    } catch (Exception e) {
+      logger.error("exception in fetch task queue res : " + e);
+      return false;
+    }
